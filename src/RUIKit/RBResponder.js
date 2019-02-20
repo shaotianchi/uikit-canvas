@@ -1,6 +1,6 @@
 export default function () {
   return {
-    nextResponse: {},
+    nextResponse: null,
     canBecameFirstResponder() {
       return false;
     },

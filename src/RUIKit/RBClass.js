@@ -1,13 +1,12 @@
 export default {
   inherit (son, father) {
-    if (Reflect.has(son, 'super')) {
-      son.super = father;
+    if (Reflect.has(son, '__super')) {
+      son.__super = father;
     } else {
-      Reflect.defineProperty(son, 'super', {
-        value: () => father
+      Reflect.defineProperty(son, '__super', {
+        value: () => father,
       });
     }
-    son._super = father;
     const fatherKeys = Reflect.ownKeys(father);
     fatherKeys.forEach(key => {
       if (Reflect.has(son, key)) { return; }
@@ -18,6 +17,12 @@ export default {
         configurable: true 
       });
     });
-    return son;
+    return new Proxy(son, {
+      set: function(obj, prop, value) {
+        obj.willSet(prop, value);
+        obj[prop] = value;
+        return true;
+      }
+    });
   }
 }

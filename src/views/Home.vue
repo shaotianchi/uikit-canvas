@@ -9,6 +9,7 @@
 import Item from '@/components/Item.vue'
 import RBView from '../RUIKit/RBView'
 import RBWindow from '../RUIKit/RBWindow'
+import RBLabel from '../RUIKit/RBLabel'
 
 export default {
   name: 'home',
@@ -37,29 +38,40 @@ export default {
       // var canvas = document.getElementById('tutorial');
       // var ctx = canvas.getContext('2d');
 
-
-
       let _window = new RBWindow;
       _window.backgroundColor = 'green'
       _window.initIn(window, document.getElementById('window'));
 
       let view = new RBView;
-      view.initWithFrame(0, 0, 100, 100);
-      view.backgroundColor = 'red';
+      view.initWithFrame((_window.frame.width - 375) / 2, (_window.frame.height - 667) / 2, 375, 667);
+      view.backgroundColor = 'white';
       _window.addSubView(view);
+      // view.backgroundColor = 'red';
+      // view.userInteraction = true;
+      // view.touchBegan = (e) => {
+      //   console.log('view handle touch began', e);
+      // }
+      // view.touchMove = (e) => {
 
-      let subview1 = new RBView;
-      subview1.initWithFrame(10, 10, 20, 20);
-      view.addSubView(subview1);
+      // }
+      // view.touchEnd = (e) => {
+        
+      // }
 
-      let subview2 = new RBView;
-      subview2.initWithFrame(50, 50, 40, 40);
-      view.addSubView(subview2);
+      let navigation = new RBView;
+      navigation.initWithFrame(0, 0, 375, 64);
+      navigation.backgroundColor = 'black'
+      view.addSubView(navigation);
 
-      let subview3 = new RBView;
-      subview3.initWithFrame(10, 10, 10, 10);
-      subview3.backgroundColor = 'green';
-      subview2.addSubView(subview3);
+      let navigationTitle = new RBLabel;
+      // navigationTitle.backgroundColor = 'red';
+      navigationTitle.initWithFrame(0, 20, 375, 44);
+      navigationTitle.text = "Home";
+      navigationTitle.color = 'white';
+      navigationTitle.fontSize = 20
+      navigationTitle.align = 'center';
+      navigation.addSubView(navigationTitle);
+
     }
   }
 }

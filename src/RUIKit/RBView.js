@@ -3,25 +3,27 @@ import RBClass from './RBClass';
 
 export default function () {
   return RBClass.inherit({
-    _id: null,
-    _ctx: null,
-    _zindex: 0,
-    backgroundColor: 'white',
+    __id: null,
+    __ctx: null,
+    __zindex: 0,
+    backgroundColor: 'transparent',
     frame: {
       x: 0,
       y: 0,
       width: 0,
       height: 0
     },
+    __super: null,
     subViews: [],
     superView: null,
-    userInteraction: true,
-    _frameInWindow: {
+    userInteraction: false,
+    __frameInWindow: {
       x: 0,
       y: 0,
       width: 0,
       height: 0
     },
+    showing: false,
     origin() {
       return {
         x: this.frame.x,
@@ -34,7 +36,6 @@ export default function () {
         height: this.frame.height
       };
     },
-    _super: null,
     initWithFrame(x, y, width, height) {
       this.frame = {
         x,
@@ -42,67 +43,114 @@ export default function () {
         width,
         height
       };
-      this._frameInWindow = this.frame;
+      this.__frameInWindow = this.frame;
       return this;
     },
     addSubView(view) {
       this.subViews.push(view);
       view.superView = this;
-      view.calculateFrameInWindow(this._frameInWindow);
-      view._ctx = this._ctx;
-      view._id = this._id + '.' + this.subViews.indexOf(view);
-      view._zindex = this._zindex + 1;
-      this.draw();
+      view.nextResponse = this;
+      if (this.showing) {
+        console.log(this.__id, 'will start draw subview', view.__id);
+        view.__draw();
+      }
+      console.log(this.__id, 'add subview: ', view.__id)
+    },
+    willShowInSuperView() {
+      if (this.showing) { return };
+      this.calculateFrameInWindow();
+      this.__zindex = this.superView.__zindex + 1;
+      this.__id = this.superView.__id + '.' + this.superView.subViews.indexOf(this);
+      this.__ctx = this.superView.__ctx;
     },
     removeFromSuperView() {
       this.superView.removeSubView(this);
       this.superView = null;
-      const node = document.getElementById(this._id);
+      const node = document.getElementById(this.__id);
       node.parentNode.removeChild(node);
+      this.showing = false;
     },
     removeSubView(subView) {
       const index = this.subViews.indexOf(subView);
       if (index < 0) { return; }
       this.subViews.splice(index, 1);
       this.subViews.forEach(view => {
-        view._id = this._id + '.' + this.subViews.indexOf(view);
+        view.__id = this.__id + '.' + this.subViews.indexOf(view);
       });
-      this.draw();
+      this.__draw();
     },
-    draw() {
-      if (!this._ctx) { return; }
+    __draw() {
+      this.willShowInSuperView();
+      console.log(this.__id, 'start draw');
+      if (!this.__ctx) { console.log(this); return; }
 
-      let canvas = document.getElementById(this._id);
+      let canvas = document.getElementById(this.__id);
       if (!canvas) {
         canvas = document.createElement('canvas');
-        canvas.id = this._id;
-        this._ctx.appendChild(canvas);
+        canvas.id = this.__id;
+        this.__ctx.appendChild(canvas);
       }
+      this.beforeDrawCtx();
+
+      canvas.style = `left: ${this.__frameInWindow.x}px; top: ${this.__frameInWindow.y}px; z-index: ${this.__zindex}; position: absolute`;
+      canvas.width = this.__frameInWindow.width;
+      canvas.height = this.__frameInWindow.height;
+
       const ctx = canvas.getContext('2d');
-
-      // canvas.style.width = String(this._frameInWindow.width) + 'px';
-      // canvas.style.height = String(this._frameInWindow.height) + 'px';
-      // canvas.style.left = String(this._frameInWindow.x) + 'px';
-      // canvas.style.top = String(this._frameInWindow.y) + 'px';
-      // canvas.style.zIndex = String(this._zindex);
-      // canvas.style.position = 'absolute';
-      canvas.style = `left: ${this._frameInWindow.x}px; top: ${this._frameInWindow.y}px; z-index: ${this._zindex}; position: absolute`;
-      canvas.width = this._frameInWindow.width;
-      canvas.height = this._frameInWindow.height;
-
       ctx.fillStyle = this.backgroundColor;
-      ctx.fillRect(0, 0, this._frameInWindow.width, this._frameInWindow.height);
+      ctx.fillRect(0, 0, this.__frameInWindow.width, this.__frameInWindow.height);
+
+      this.draw(ctx);
       this.subViews.forEach((view) => {
-        view.draw();
+        console.log('draw subview', view);
+        view.__draw();
       });
+      this.showing = true;
     },
-    calculateFrameInWindow(superFrame) {
-      this._frameInWindow = {
-        x: superFrame.x + this.frame.x,
-        y: superFrame.y + this.frame.y,
-        width: this.frame.width,
-        height: this.frame.height
+    draw(ctx) {
+
+    },
+    beforeDrawCtx() {
+      
+    },
+    calculateFrameInWindow() {
+      if (!this.superView) {
+        this.__frameInWindow = this.frame;
+      } else {
+        this.__frameInWindow = {
+          x: this.superView.__frameInWindow.x + this.frame.x,
+          y: this.superView.__frameInWindow.y + this.frame.y,
+          width: this.frame.width,
+          height: this.frame.height
+        }
       }
     },
+    hitTest(point) {
+      const inFrame = (point.x >= this.__frameInWindow.x && point.x <= this.__frameInWindow.x + this.__frameInWindow.width && point.y >= this.__frameInWindow.y && point.y <= this.__frameInWindow.y + this.__frameInWindow.height);
+      if (!inFrame) { return null; }
+      let hitView = null;
+      this.subViews.some((view) => {
+        hitView = view.hitTest(point);
+        if (hitView) {
+          return true;
+        }
+      });
+      return hitView || this;
+    },
+    __redrawProps () {
+      return ['backgroundColor', 'frame']
+    },
+    willSet(prop, value) {
+      if (prop === 'frame') {
+        if (this.superView) {
+          this.calculateFrameInWindow(this.superView.__frameInWindow);
+        } else {
+          this.__frameInWindow = value;
+        }
+      }
+      if (this.__redrawProps().includes(prop) && this.showing) {
+        this.__draw();
+      }
+    }
   }, new RBResponder);
-};
+}
