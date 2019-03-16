@@ -6,6 +6,12 @@ export default function () {
     __id: null,
     __ctx: null,
     __zindex: 0,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    shadowOffset: [0, 0],
+    shadowRadius: 0,
     backgroundColor: 'transparent',
     frame: {
       x: 0,
@@ -51,10 +57,8 @@ export default function () {
       view.superView = this;
       view.nextResponse = this;
       if (this.showing) {
-        console.log(this.__id, 'will start draw subview', view.__id);
         view.__draw();
       }
-      console.log(this.__id, 'add subview: ', view.__id)
     },
     willShowInSuperView() {
       if (this.showing) { return };
@@ -81,8 +85,7 @@ export default function () {
     },
     __draw() {
       this.willShowInSuperView();
-      console.log(this.__id, 'start draw');
-      if (!this.__ctx) { console.log(this); return; }
+      if (!this.__ctx) { return; }
 
       let canvas = document.getElementById(this.__id);
       if (!canvas) {
@@ -100,9 +103,12 @@ export default function () {
       ctx.fillStyle = this.backgroundColor;
       ctx.fillRect(0, 0, this.__frameInWindow.width, this.__frameInWindow.height);
 
+      ctx.lineWidth = this.borderWidth;
+      ctx.strokeStyle = this.borderColor;
+      ctx.strokeRect(0, 0, this.frame.width, this.frame.height);//for white background
+
       this.draw(ctx);
       this.subViews.forEach((view) => {
-        console.log('draw subview', view);
         view.__draw();
       });
       this.showing = true;
@@ -138,7 +144,7 @@ export default function () {
       return hitView || this;
     },
     __redrawProps () {
-      return ['backgroundColor', 'frame']
+      return ['backgroundColor', 'frame', 'borderWidth', 'borderColor', 'shadowColor', 'shadowOpacity', 'shadowOffset', 'shadowRadius']
     },
     willSet(prop, value) {
       if (prop === 'frame') {

@@ -10,6 +10,7 @@ import Item from '@/components/Item.vue'
 import RBView from '../RUIKit/RBView'
 import RBWindow from '../RUIKit/RBWindow'
 import RBLabel from '../RUIKit/RBLabel'
+import RBImage from '../RUIKit/RBImage'
 
 export default {
   name: 'home',
@@ -71,6 +72,13 @@ export default {
       navigationTitle.fontSize = 20
       navigationTitle.align = 'center';
       navigation.addSubView(navigationTitle);
+
+      let imageView = new RBImage;
+      imageView.initWithFrame(0, 90, 100, 100);
+      imageView.src = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
+      imageView.borderWidth = 2;
+      imageView.borderColor = 'red';
+      view.addSubView(imageView);
 
     }
   }

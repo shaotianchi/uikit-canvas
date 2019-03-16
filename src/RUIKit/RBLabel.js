@@ -40,8 +40,8 @@ export default function () {
         const div = document.createElement("div");
         div.innerHTML = this.text;
         div.style.position = 'absolute';
-        div.style.top  = '0px';
-        div.style.left = '0px';
+        div.style.top  = '-1000000px';
+        div.style.left = '-1000000px';
         div.style.fontFamily = this.font;
         div.style.fontWeight = this.fontWeight;
         div.style.fontSize = this.fontSize + 'px'; // or 'px'
