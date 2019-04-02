@@ -1,6 +1,26 @@
 import RBResponder from './RBResponder';
 import RBClass from './RBClass';
 
+const RBViewContentMode = {
+  ScaleToFill: 'ScaleToFill',
+  ScaleAspectFit: 'ScaleAspectFit',      // contents scaled to fit with fixed aspect. remainder is transparent
+  ScaleAspectFill: 'ScaleAspectFill',     // contents scaled to fill with fixed aspect. some portion of content may be clipped.
+  Redraw: 'Redraw',              // redraw on bounds change (calls -setNeedsDisplay)
+  Center: 'Center',              // contents remain same size. positioned adjusted.
+  Top: 'Top',
+  Bottom: 'Bottom',
+  Left: 'Left',
+  Right: 'Right',
+  TopLeft: 'TopLeft',
+  TopRight: 'TopRight',
+  BottomLeft: 'BottomLeft',
+  BottomRight: 'BottomRight',
+}
+
+export {
+  RBViewContentMode
+}
+
 export default function () {
   return RBClass.inherit({
     __id: null,
