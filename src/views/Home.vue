@@ -1,7 +1,5 @@
 <template>
   <div class="home" id="window">
-    <!-- <canvas id="tutorial" width="200" height="200"></canvas> -->
-    <!-- <item id="item-1"></item> -->
   </div>
 </template>
 
@@ -18,33 +16,21 @@ export default {
     Item
   },
   mounted () {
-    // window.addEventListener('resize', this.resize, false);
     this.draw();
   },
   methods: {
-    // resize () {
-    //   var canvas = document.getElementById('tutorial');
-    //   // var ctx = canvas.getContext('2d');
-    //   canvas.width = window.innerWidth;
-    //   canvas.height = window.innerHeight;
-    // },
     draw () {
-      // var item = document.getElementById('item-1').outerHTML;
-      // var data = 
-      // `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
-      //   <foreignObject width="100%" height="100%">
-      //     ${item}
-      //   </foreignObject>
-      // </svg>`;
-      // var canvas = document.getElementById('tutorial');
-      // var ctx = canvas.getContext('2d');
-
       let _window = new RBWindow;
       _window.backgroundColor = 'green'
       _window.initIn(window, document.getElementById('window'));
 
+      let background = new RBImageView;
+      background.initWithFrame(0, 0, 477, 960);
+      background.src = require('../assets/8p.png');
+      _window.addSubView(background);
+
       let view = new RBView;
-      view.initWithFrame((_window.frame.width - 375) / 2, (_window.frame.height - 667) / 2, 375, 667);
+      view.initWithFrame(32, 110, 414, 736);
       view.backgroundColor = 'white';
       _window.addSubView(view);
       // view.backgroundColor = 'red';
@@ -58,9 +44,9 @@ export default {
       // view.touchEnd = (e) => {
         
       // }
-
+      
       let navigation = new RBView;
-      navigation.initWithFrame(0, 0, 375, 64);
+      navigation.initWithFrame(0, 0, 414, 64);
       navigation.backgroundColor = 'black'
       view.addSubView(navigation);
 
@@ -79,7 +65,6 @@ export default {
       imageView.borderWidth = 2;
       imageView.borderColor = 'red';
       view.addSubView(imageView);
-
     }
   }
 }

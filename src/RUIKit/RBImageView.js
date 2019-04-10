@@ -10,15 +10,13 @@ export default function () {
       if (!this.src || this.src.length <= 0) { return; }
       var img = new Image;
       img.onload = () => {
-        console.log(img.width);
         if (this.contentMode === RBViewContentMode.ScaleToFill) {
           ctx.drawImage(img, 0, 0, this.frame.width, this.frame.height);
         } else if (this.contentMode === RBViewContentMode.ScaleAspectFit) {
-          // ctx.drawImage(img) 
+          ctx.drawImage(img, 0, 0, this.frame.width, this.frame.height);
         }
       };
       img.src = this.src;
-
     },
     __redrawProps () {
       let redrawProps = this.__super.__redrawProps || [];
