@@ -9,6 +9,7 @@ import RBView from '../RUIKit/RBView'
 import RBWindow from '../RUIKit/RBWindow'
 import RBLabel from '../RUIKit/RBLabel'
 import RBImageView from '../RUIKit/RBImageView'
+import { RBViewContentMode } from '../RUIKit/RBView'
 
 export default {
   name: 'home',
@@ -64,6 +65,7 @@ export default {
       imageView.src = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
       imageView.borderWidth = 2;
       imageView.borderColor = 'red';
+      imageView.contentMode = RBViewContentMode.ScaleAspectFit;
       view.addSubView(imageView);
     }
   }
